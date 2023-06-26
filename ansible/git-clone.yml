@@ -1,0 +1,6 @@
+- name: Clone Tool Repos - {{ item.name }}
+  git:
+    repo: "https://{{ item.repo }}"
+    depth: 1
+    dest: "{{ vm_tools_source_dir }}/{{ item.repo }}"
+  when: item.repo is defined and item.repo

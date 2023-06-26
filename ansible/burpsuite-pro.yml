@@ -1,0 +1,10 @@
+- name: Install BurpSuite Pro
+  shell: |
+    wget -O /tmp/burp-installer.sh 'https://portswigger-cdn.net/burp/releases/download?product=pro&version=2023.3.2&type=Linux'
+    chmod +x /tmp/burp-installer.sh
+    /tmp/burp-installer.sh -q -dir {{ vm_tools_dir }}/BurpSuitePro
+    mkdir -p ~/Desktop
+    ln -s '{{ vm_tools_dir }}/BurpSuitePro/Burp Suite Professional.desktop' '/home/{{ vm_username }}/Desktop/Burp Suite Professional.desktop'
+  args:
+    chdir: "{{ vm_tools_dir }}/"
+    creates: "~/Desktop/Burp\ Suite\ Professional.desktop"

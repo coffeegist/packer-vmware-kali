@@ -1,0 +1,8 @@
+# Installing GoLang
+- name: Install GoLang
+  become: yes
+  shell: |
+    curl -s https://go.dev/dl/ | grep "downloadBox.*linux" | (echo -n 'https://go.dev'; cut -f 4 -d \" ) | wget -qi - -O /tmp/go.tar.gz
+    rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tar.gz
+  args:
+    creates: "/usr/local/go/bin/go"

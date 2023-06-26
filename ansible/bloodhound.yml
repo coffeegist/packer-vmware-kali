@@ -1,0 +1,9 @@
+- name: BloodHound GUI
+  shell: |
+    wget https://github.com/BloodHoundAD/BloodHound/releases/download/4.2.0/BloodHound-linux-x64.zip
+    unzip BloodHound-linux-x64.zip -d /tmp/
+    mv /tmp/BloodHound-linux-x64 BloodHound-GUI
+    rm BloodHound-linux-x64.zip
+  args:
+    chdir: "{{ vm_tools_dir }}/"
+    creates: "{{ vm_tools_dir }}/BloodHound-GUI/"

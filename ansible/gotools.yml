@@ -1,0 +1,4 @@
+# installing go-lang tools
+- name: Install Go Tools - {{ item }}
+  shell: |
+    /usr/local/go/bin/go install -v {{ item }}

@@ -1,0 +1,7 @@
+- name: Install Gowitness
+  shell: |
+    curl -s https://api.github.com/repos/sensepost/gowitness/releases/latest | grep "browser_download_url.*linux-amd64" | cut -d : -f 2,3 | tr -d \" | wget -qi - -O /tmp/gowitness
+    chmod +x /tmp/gowitness
+    mv /tmp/gowitness $HOME/.local/bin
+  args:
+    creates: $HOME/.local/bin/gowitness
