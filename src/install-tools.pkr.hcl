@@ -7,6 +7,10 @@ packer {
       version = ">= 1.1.0"
       source  = "github.com/hashicorp/ansible"
     }
+    vmware = {
+      version = ">= 1.0.10"
+      source  = "github.com/hashicorp/vmware"
+    }
   }
 }
 
@@ -54,11 +58,12 @@ source "vmware-vmx" "install-tools" {
   vm_name               = "${var.vm_hostname}"
   display_name          = "${var.vm_hostname}"
   output_directory      = "${var.output_directory}"
+  shutdown_command = "echo '${var.vm_password}' | sudo -S shutdown -P now"
+  format                = "ova"
 
   # VM Connection
   ssh_username          = "${var.vm_username}"
   ssh_password          = "${var.vm_password}"
-  ssh_certificate_file  = "/Users/coffeegist/.ssh/id_ed25519"
   ssh_timeout           = "8000s"
   snapshot_name         = "Tools Installed - ${formatdate("YYYY-MM-DD hh:mm", timestamp())}"
 }

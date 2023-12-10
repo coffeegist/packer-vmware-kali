@@ -34,39 +34,32 @@
       # Python3 tools
       - name: "PKINITtools"
         repo: "github.com/dirkjanm/PKINITtools"
-        pip: yes # Run pip install
+        pip: no # Run pip install
         pip_requirements_file: "requirements.txt"
 
       - name: "impacket"
         repo: "github.com/ThePorgs/impacket"
         pip: yes # Run pip install
-        pip_packages:
-          - "."
 
       - name: "krbrelayx"
         repo: "github.com/dirkjanm/krbrelayx"
-        pip: yes # Run pip install
-        pip_packages: # Install additional pip packages
+        pip: no # Run pip install
+        pipx_dependencies: # Install additional pip packages
           - "impacket"
-          - "dsinternals"
+        pip_dependencies:
+          - "dsinternals" # cannot be installed with pipx
 
       - name: "mitm6"
         repo: "github.com/dirkjanm/mitm6"
         pip: yes # Run pip install
-        pip_packages:
-          - "."
 
       - name: "pre2k"
         repo: "github.com/garrettfoster13/pre2k"
         pip: yes # Run pip install
-        pip_packages:
-          - "."
 
       - name: "CrackMapExec"
         repo: "github.com/Porchetta-Industries/CrackMapExec"
         pip: yes # Run pip install
-        pip_packages:
-          - "."
         package_dependencies:
           - "libssl-dev"
           - "libffi-dev"
@@ -75,43 +68,35 @@
 
       - name: "PetitPotam"
         repo: "github.com/topotam/PetitPotam"
-        pip: yes # Run pip install
-        pip_packages:
+        pip: no # Run pip install
+        pipx_dependencies:
           - "impacket"
 
       - name: "Responder"
         repo: "github.com/lgandx/Responder"
-        pip: yes # Run pip install
+        pip: no # Run pip install
         pip_requirements_file: "requirements.txt"
 
-      - name: BloodHound.py
+      - name: bloodhound-py
         repo: "github.com/fox-it/BloodHound.py"
         pip: yes # Run pip install
-        pip_packages:
-          - "."
 
       - name: "SeeYouCM-Thief"
         repo: "github.com/trustedsec/SeeYouCM-Thief"
-        pip: yes
+        pip: no
         pip_requirements_file: "requirements.txt"
 
       - name: "Certipy"
         repo: "github.com/ly4k/Certipy"
         pip: yes
-        pip_packages:
-          - "."
 
       - name: "spraycharles"
         repo: "github.com/Tw1sm/spraycharles"
         pip: yes
-        pip_packages:
-          - "."
 
       - name: "RITM"
         repo: "github.com/Tw1sm/RITM"
         pip: yes
-        pip_packages:
-          - "."
 
     packages: # Apt packages
       - nmap
@@ -120,6 +105,7 @@
       - unzip
       - tar
 
+    # Todo: Define "creates" for these to solve idempotency
     go_repos: # go tools
       - "github.com/lkarlslund/ldapnomnom@latest"
       - "github.com/projectdiscovery/pdtm/cmd/pdtm@latest"
@@ -154,12 +140,12 @@
           - python3-venv
         state: present
 
-    - include: ./apt.yml
+    - include_tasks: ./apt.yml
       loop: "{{ packages }}"
 
-    - include: ./vscode.yml
+    - include_tasks: ./vscode.yml
 
-    - include: ./golang.yml
+    - include_tasks: ./golang.yml
 
     - name: Update PATH
       become: yes
@@ -176,7 +162,7 @@
     #     group: '{{ vm_username }}'
     #     mode: 'u=rw,go=r'
 
-    - include: ./gotools.yml
+    - include_tasks: ./gotools.yml
       loop: "{{ go_repos }}"
 
     # Tools directory setup
@@ -225,7 +211,7 @@
         mode: 'u=rw,go=r'
 
     # Clone repositories and link to tools directory
-    - include: git-clone.yml
+    - include_tasks: git-clone.yml
       loop: "{{ repositories }}"
 
     - name: Link Tool Repos to Tool Directory
@@ -235,17 +221,28 @@
         state: link
       with_items: "{{ repositories }}"
 
-    - include: pip-install.yml
+    - name: Pip Install PipX
+      ansible.builtin.pip:
+        name: pipx
+        state: present
+      register: pipx_install
+
+    - name: Ensure pipx Path
+      ansible.builtin.shell:
+        cmd: "python3 -m pipx ensurepath"
+      when: pipx_install is defined
+
+    - include_tasks: pip-install.yml
       loop: "{{ repositories }}"
 
     # BloodHound GUI
     # TODO: Break this out into it's own role
     # TODO: Install neo4j
-    - include: bloodhound.yml
+    - include_tasks: bloodhound.yml
 
     # BurpSuite Pro
     # TODO: Break this out into it's own role
-    - include: burpsuite-pro.yml
+    - include_tasks: burpsuite-pro.yml
 
     - name: Set ZSH for User
       become: yes
@@ -271,6 +268,6 @@
         creates: "/opt/op-log/"
 
     # Gowitness Install
-    - include: gowitness.yml
+    - include_tasks: gowitness.yml
 
-    - include: sublime.yml
+    - include_tasks: sublime.yml
