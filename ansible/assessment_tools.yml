@@ -107,6 +107,7 @@
       - zip
       - unzip
       - tar
+      - flameshot
 
     # Todo: Define "creates" for these to solve idempotency
     go_repos: # go tools
