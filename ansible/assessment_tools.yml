@@ -31,6 +31,9 @@
       - name: "Seclists"
         repo: "github.com/danielmiessler/SecLists"
 
+      - name: "Nlzr"
+        repo: "github.com/noahpowers/nlzr"
+
       # Python3 tools
       - name: "PKINITtools"
         repo: "github.com/dirkjanm/PKINITtools"

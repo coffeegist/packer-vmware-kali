@@ -42,7 +42,7 @@ variable "source_path" {
 variable "vm_tools_dir" {
   type        = string
   description = "Directory to store VM tools"
-  default    = "/opt"
+  default    = "/tools"
 }
 
 variable "output_directory" {
@@ -58,7 +58,7 @@ source "vmware-vmx" "install-tools" {
   vm_name               = "${var.vm_hostname}"
   display_name          = "${var.vm_hostname}"
   output_directory      = "${var.output_directory}"
-  shutdown_command = "echo '${var.vm_password}' | sudo -S shutdown -P now"
+  shutdown_command      = "echo '${var.vm_password}' | sudo -S shutdown -P now"
   format                = "ova"
 
   # VM Connection
