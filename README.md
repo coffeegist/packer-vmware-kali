@@ -1,7 +1,7 @@
 ```bash
 # set up necessary environment variables
-export PKR_VAR_vm_password='RealPasswordHere'
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES # Ansible bug workaround
+export PKR_VAR_vm_password='RealPasswordHere'
 
 # Build the template
 packer init src/packer.pkr.hcl

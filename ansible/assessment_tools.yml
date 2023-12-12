@@ -26,13 +26,16 @@
         repo: "github.com/aboul3la/Sublist3r"
 
       - name: "BloodHound"
-        repo: "github.com/BloodHoundAD/BloodHound"
+        repo: "github.com/BloodHoundAD/BloodHound" # Download the release instead
 
       - name: "Seclists"
         repo: "github.com/danielmiessler/SecLists"
 
       - name: "Nlzr"
         repo: "github.com/noahpowers/nlzr"
+
+      - name: "Gnmap Parser"
+        repo: "github.com/jasonjfrank/gnmap-parser"
 
       # Python3 tools
       - name: "PKINITtools"
@@ -108,6 +111,8 @@
       - unzip
       - tar
       - flameshot
+      - neo4j # Maybe make this a service?
+      - docker.io
 
     # Todo: Define "creates" for these to solve idempotency
     go_repos: # go tools
@@ -277,3 +282,5 @@
     - include_tasks: sublime.yml
 
     - include_tasks: nessus.yml
+
+    - include_tasks: docker.yml
