@@ -275,3 +275,5 @@
     - include_tasks: gowitness.yml
 
     - include_tasks: sublime.yml
+
+    - include_tasks: nessus.yml

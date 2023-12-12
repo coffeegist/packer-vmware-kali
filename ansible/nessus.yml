@@ -1,0 +1,22 @@
+- name: Download Nessus 10.6.3
+  ansible.builtin.get_url:
+    url: https://www.tenable.com/downloads/api/v2/pages/nessus/files/Nessus-10.6.3-debian10_amd64.deb
+    dest: /tmp/Nessus-10.6.3-debian10_amd64.deb
+    mode: 0755
+    owner: "{{ vm_username }}"
+    group: "{{ vm_username }}"
+
+- name: Install Nessus
+  become: yes
+  ansible.builtin.apt:
+    deb: /tmp/Nessus-10.6.3-debian10_amd64.deb
+    state: present
+    update_cache: yes
+    force: yes
+
+- name: Start Nessus
+  become: yes
+  ansible.builtin.service:
+    name: nessusd
+    state: stopped
+    enabled: yes
