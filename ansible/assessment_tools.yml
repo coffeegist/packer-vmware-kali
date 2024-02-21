@@ -35,7 +35,7 @@
         repo: "github.com/noahpowers/nlzr"
 
       - name: "Gnmap Parser"
-        repo: "github.com/jasonjfrank/gnmap-parser"
+        repo: "github.com/ChrisTruncer/gnmap-parser"
 
       # Python3 tools
       - name: "PKINITtools"
