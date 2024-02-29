@@ -35,37 +35,42 @@
         repo: "github.com/noahpowers/nlzr"
 
       - name: "Gnmap Parser"
-        repo: "github.com/ChrisTruncer/gnmap-parser"
+        repo: "github.com/m1j09830/gnmap-parser.git"
+
+      - name: "SIET"
+        repo: "github.com/frostbits-security/SIET.git"
+
+      - name: "cisot7"
+        repo: "github.com/theevilbit/ciscot7.git"
 
       # Python3 tools
       - name: "PKINITtools"
         repo: "github.com/dirkjanm/PKINITtools"
-        pip: no # Run pip install
+        pip: yes # Run pip install
         pip_requirements_file: "requirements.txt"
 
       - name: "impacket"
         repo: "github.com/ThePorgs/impacket"
-        pip: yes # Run pip install
+        pipx: yes # Run pip install
 
       - name: "krbrelayx"
         repo: "github.com/dirkjanm/krbrelayx"
-        pip: no # Run pip install
-        pipx_dependencies: # Install additional pip packages
-          - "impacket"
+        pip: yes # Run pip install
         pip_dependencies:
+          - "impacket"
           - "dsinternals" # cannot be installed with pipx
 
       - name: "mitm6"
         repo: "github.com/dirkjanm/mitm6"
-        pip: yes # Run pip install
+        pipx: yes # Run pip install
 
       - name: "pre2k"
         repo: "github.com/garrettfoster13/pre2k"
-        pip: yes # Run pip install
+        pipx: yes # Run pip install
 
       - name: "CrackMapExec"
         repo: "github.com/Porchetta-Industries/CrackMapExec"
-        pip: yes # Run pip install
+        pipx: yes # Run pip install
         package_dependencies:
           - "libssl-dev"
           - "libffi-dev"
@@ -74,35 +79,62 @@
 
       - name: "PetitPotam"
         repo: "github.com/topotam/PetitPotam"
-        pip: no # Run pip install
-        pipx_dependencies:
+        pip: yes # Run pip install
+        pip_dependencies:
           - "impacket"
 
       - name: "Responder"
         repo: "github.com/lgandx/Responder"
-        pip: no # Run pip install
+        pip: yes # Run pip install
         pip_requirements_file: "requirements.txt"
 
       - name: bloodhound-py
         repo: "github.com/fox-it/BloodHound.py"
-        pip: yes # Run pip install
+        pipx: yes # Run pip install
 
       - name: "SeeYouCM-Thief"
         repo: "github.com/trustedsec/SeeYouCM-Thief"
-        pip: no
+        pip: yes
         pip_requirements_file: "requirements.txt"
 
       - name: "Certipy"
         repo: "github.com/ly4k/Certipy"
-        pip: yes
+        pipx: yes
 
       - name: "spraycharles"
         repo: "github.com/Tw1sm/spraycharles"
-        pip: yes
+        pipx: yes
 
       - name: "RITM"
         repo: "github.com/Tw1sm/RITM"
+        pipx: yes
+
+      - name: "DonPAPI"
+        repo: "github.com/login-securite/DonPAPI.git"
+        pipx: yes
+
+      - name: "Assessment-Toolkit"
+        repo: "github.com/m1j09830/Assessment-Toolkit.git"
+        pipx: yes
+
+      - name: "pywhisker"
+        repo: "github.com/ShutdownRepo/pywhisker.git"
         pip: yes
+        pip_requirements_file: "requirements.txt"
+
+      - name: "Auto-Egress-Assess"
+        repo: "github.com/tarrell13/Auto-Egress-Assess.git"
+        pip: yes
+        pip_requirements_file: "requirements.txt"
+
+      - name: "NetExec"
+        repo: "github.com/Pennyw0rth/NetExec.git"
+        pipx: yes
+        package_dependencies:
+          - "libssl-dev"
+          - "libffi-dev"
+          - "python-dev-is-python3"
+          - "build-essential"
 
     packages: # Apt packages
       - nmap
@@ -242,6 +274,9 @@
       when: pipx_install is defined
 
     - include_tasks: pip-install.yml
+      loop: "{{ repositories }}"
+
+    - include_tasks: pipx-install.yml
       loop: "{{ repositories }}"
 
     # BloodHound GUI

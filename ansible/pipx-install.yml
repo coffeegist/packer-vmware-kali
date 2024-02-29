@@ -1,0 +1,32 @@
+# Pip installation for tools
+
+- name: Pipx Install Tool - {{ item.name }}
+  community.general.pipx:
+    name: "{{ item.name }}"
+    source: "{{ vm_tools_dir }}/{{ item.name }}"
+    state: install
+  when: item.pipx is defined and item.pipx
+  register: pipx_installed
+
+- name: Pipx Inject Dependencies - {{ item.name }}
+  community.general.pipx:
+    name: "{{ item.name }}"
+    source: "{{ vm_tools_dir }}/{{ item.name }}"
+    state: inject
+    install_deps: true
+    include_injected: true
+    inject_packages: "{{ item.pipx_dependencies }}"
+  when: pipx_installed.changed and (item.pipx_dependencies is defined and (item.pipx_dependencies | length > 0))
+
+- name: Pipx Install Dependencies - {{ item.name }}
+  community.general.pipx:
+    name: "{{ pipx_dependency }}"
+    state: install
+    install_deps: true
+    include_injected: true
+  when: not pipx_installed.changed and (item.pipx_dependencies is defined and (item.pipx_dependencies | length > 0))
+  with_items: "{{ item.pipx_dependencies }}"
+  loop_control:
+    loop_var: pipx_dependency
+
+

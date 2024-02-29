@@ -1,50 +1,9 @@
-# Pip installation for tools
+- name: Pip Install Tools - {{ item.name }}
+  pip:
+    chdir: "{{ vm_tools_dir }}/{{ item.name }}"
+    virtualenv: "{{ vm_tools_dir }}/{{ item.name }}/venv"
+    virtualenv_python: python3
 
-- name: Pipx Install Tool - {{ item.name }}
-  community.general.pipx:
-    name: "{{ item.name }}"
-    source: "{{ vm_tools_dir }}/{{ item.name }}"
-    state: install
+    name: "{{ item.pip_dependencies | default(omit) }}"
+    requirements: "{{ item.pip_requirements_file | default(omit) }}"
   when: item.pip is defined and item.pip
-  register: pipx_installed
-
-- name: Pipx Inject Dependencies - {{ item.name }}
-  community.general.pipx:
-    name: "{{ item.name }}"
-    source: "{{ vm_tools_dir }}/{{ item.name }}"
-    state: inject
-    install_deps: true
-    include_injected: true
-    inject_packages: "{{ item.pipx_dependencies }}"
-  when: pipx_installed.changed and (item.pipx_dependencies is defined and (item.pipx_dependencies | length > 0))
-
-- name: Pipx Install Dependencies - {{ item.name }}
-  community.general.pipx:
-    name: "{{ pipx_dependency }}"
-    state: install
-    install_deps: true
-    include_injected: true
-  when: not pipx_installed.changed and (item.pipx_dependencies is defined and (item.pipx_dependencies | length > 0))
-  with_items: "{{ item.pipx_dependencies }}"
-  loop_control:
-    loop_var: pipx_dependency
-
-- name: Pipx Install Requirements - {{ item.name }}
-  block:
-    - name: Pipx Gather Requirements - {{ item.name }}
-      command: cat {{ vm_tools_dir }}/{{ item.name }}/{{ item.pip_requirements_file }}
-      register: pip_requirements
-      when: item.pip_requirements_file is defined and item.pip_requirements_file
-
-    - name: Pipx Install Gathered Requirements - {{ item.name }}
-      community.general.pipx:
-        name: "{{ requirement_item }}"
-        state: install
-      when: pip_requirements is defined and pip_requirements.stdout_lines | length > 0
-      with_items: "{{ pip_requirements.stdout_lines }}"
-      loop_control:
-        loop_var: requirement_item
-  when: item.pip_requirements_file is defined and item.pip_requirements_file
-  ignore_errors: true
-
-
