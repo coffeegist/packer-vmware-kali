@@ -4,6 +4,6 @@
     virtualenv: "{{ vm_tools_dir }}/{{ item.name }}/venv"
     virtualenv_python: python3
 
-    name: "{{ item.pip_packages | default(omit) }}"
+    name: "{{ item.pip_dependencies | default(omit) }}"
     requirements: "{{ item.pip_requirements_file | default(omit) }}"
   when: item.pip is defined and item.pip
