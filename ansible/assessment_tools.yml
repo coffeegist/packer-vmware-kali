@@ -35,7 +35,13 @@
         repo: "github.com/noahpowers/nlzr"
 
       - name: "Gnmap Parser"
-        repo: "github.com/ChrisTruncer/gnmap-parser"
+        repo: "github.com/m1j09830/gnmap-parser.git"
+
+      - name: "SIET"
+        repo: "github.com/frostbits-security/SIET.git"
+
+      - name: "cisot7"
+        repo: "github.com/theevilbit/ciscot7.git"
 
       # Python3 tools
       - name: "PKINITtools"
@@ -102,6 +108,33 @@
       - name: "RITM"
         repo: "github.com/Tw1sm/RITM"
         pipx: yes
+
+      - name: "DonPAPI"
+        repo: "github.com/login-securite/DonPAPI.git"
+        pipx: yes
+
+      - name: "Assessment-Toolkit"
+        repo: "github.com/m1j09830/Assessment-Toolkit.git"
+        pipx: yes
+
+      - name: "pywhisker"
+        repo: "github.com/ShutdownRepo/pywhisker.git"
+        pip: yes
+        pip_requirements_file: "requirements.txt"
+
+      - name: "Auto-Egress-Assess"
+        repo: "github.com/tarrell13/Auto-Egress-Assess.git"
+        pip: yes
+        pip_requirements_file: "requirements.txt"
+
+      - name: "NetExec"
+        repo: "github.com/Pennyw0rth/NetExec.git"
+        pipx: yes
+        package_dependencies:
+          - "libssl-dev"
+          - "libffi-dev"
+          - "python-dev-is-python3"
+          - "build-essential"
 
     packages: # Apt packages
       - nmap
