@@ -8,6 +8,7 @@
     vm_tools_source_dir: "{{ [vm_tools_dir, 'src'] | path_join }}"
     vm_hostname: "kali-ops"
     vm_username: "kali"
+    share_username: "asmtuser"
     repositories:
       # Git Only
       - name: "AggressorScripts"
@@ -145,6 +146,8 @@
       - flameshot
       - neo4j # Maybe make this a service?
       - docker.io
+      - firefox-esr
+      - jq
 
     # Todo: Define "creates" for these to solve idempotency
     go_repos: # go tools
@@ -319,3 +322,5 @@
     - include_tasks: nessus.yml
 
     - include_tasks: docker.yml
+
+    - include_tasks: ./firefox-configuration.yml
