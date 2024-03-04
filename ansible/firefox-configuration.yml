@@ -2,17 +2,17 @@
 
 # Get link to latest version of foxy proxy
 - name: Fetch FoxyProxy version number
-  shell: |
+  ansible.builtin.shell: |
     curl -sS 'https://addons.mozilla.org/en-US/firefox/addon/foxyproxy-standard/' | grep -oP 'href="https:\/\/addons\.mozilla\.org\/firefox\/downloads\/file\/\d{5,15}\/foxyproxy_standard-\d?\.\d?\.xpi"' | cut -f 2 -d '"'
   register: foxyproxy_link_raw
 
 - name: Extract link
-  set_fact:
+  ansible.builtin.set_fact:
     foxyproxy_link: "{{ foxyproxy_link_raw.stdout }}"
 
 - name: "Create FoxyProxy Directory"
   become: yes
-  file:
+  ansible.builtin.file:
     path: /usr/lib/firefox-esr/distribution/extensions/
     state: directory
     mode: 0755

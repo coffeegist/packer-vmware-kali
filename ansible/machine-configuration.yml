@@ -1,0 +1,34 @@
+---
+
+- hosts: all
+  name: Configure Kali Ops
+  become: no
+  become_method: sudo
+  vars:
+    share_username: "asmtuser"
+
+  tasks:
+    - name: Add /etc/fstab entry for shared folder
+      become: yes
+      lineinfile:
+        dest: /etc/fstab
+        line: "//REPLACE_ME_WITH_SHARE_IP/share\t/share\tcifs\tusername={{ share_username }},noauto,user\t0\t0"
+
+    - name: "Create XFCE4 Configuration Directory"
+      ansible.builtin.file:
+        path: /home/{{ ansible_user_id }}/.config/xfce4/xfconf/xfce-perchannel-xml/
+        state: directory
+        mode: 0755
+
+    - name: Add xfce4-power-manager.xml file to system
+      ansible.builtin.copy:
+        src: ./files/xfce4-power-manager.xml
+        dest: /home/{{ ansible_user_id }}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
+        mode: 0644
+
+    - name: Add xfce4-screensaver.xml file to system
+      ansible.builtin.copy:
+        src: ./files/xfce4-screensaver.xml
+        dest: /home/{{ ansible_user_id }}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml
+        mode: 0644
+
