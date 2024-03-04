@@ -3,3 +3,6 @@
 - name: Import Assessment Tools
   ansible.builtin.import_playbook: ./assessment_tools.yml
 
+- name: Machine Configuration
+  ansible.builtin.import_playbook: ./machine-configuration.yml
+

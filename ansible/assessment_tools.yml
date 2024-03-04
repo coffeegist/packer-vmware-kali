@@ -7,7 +7,8 @@
   vars:
     vm_tools_source_dir: "{{ [vm_tools_dir, 'src'] | path_join }}"
     vm_hostname: "kali-ops"
-    vm_username: "kali"
+    ansible_user_id: "kali"
+
     repositories:
       # Git Only
       - name: "AggressorScripts"
@@ -145,6 +146,8 @@
       - flameshot
       - neo4j # Maybe make this a service?
       - docker.io
+      - firefox-esr
+      - jq
 
     # Todo: Define "creates" for these to solve idempotency
     go_repos: # go tools
@@ -192,15 +195,15 @@
       become: yes
       lineinfile:
         dest: /etc/zsh/zshrc
-        line: 'export PATH=$PATH:/usr/local/go/bin:/home/{{ vm_username }}/.local/bin:$HOME/go/bin'
+        line: 'export PATH=$PATH:/usr/local/go/bin:/home/{{ ansible_user_id }}/.local/bin:$HOME/go/bin'
 
     # - name: Add Go Bin to PATH
     #   become: yes
     #   copy:
     #     dest: /etc/profile.d/golang-path.sh
     #     content: 'export PATH=$PATH:/usr/local/go/bin'
-    #     owner: '{{ vm_username }}'
-    #     group: '{{ vm_username }}'
+    #     owner: '{{ ansible_user_id }}'
+    #     group: '{{ ansible_user_id }}'
     #     mode: 'u=rw,go=r'
 
     - include_tasks: ./gotools.yml
@@ -211,8 +214,8 @@
       become: yes
       file:
         path: "{{ vm_tools_dir }}"
-        owner: "{{ vm_username }}"
-        group: "{{ vm_username }}"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
         state: directory
         mode: 0755
 
@@ -220,16 +223,16 @@
       become: yes
       file:
         path: "{{ vm_tools_source_dir }}"
-        owner: "{{ vm_username }}"
-        group: "{{ vm_username }}"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
         state: directory
         mode: 0755
 
     - name: Create User Local Bin Directory
       file:
-        path: "/home/{{ vm_username }}/.local/bin"
-        owner: "{{ vm_username }}"
-        group: "{{ vm_username }}"
+        path: "/home/{{ ansible_user_id }}/.local/bin"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
         state: directory
         mode: 0755
 
@@ -237,8 +240,8 @@
       become: yes
       file:
         path: "/opt/op-log"
-        owner: "{{ vm_username }}"
-        group: "{{ vm_username }}"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
         state: directory
         mode: 0755
 
@@ -247,8 +250,8 @@
       copy:
         dest: /etc/profile.d/golang-path.sh
         content: 'export PATH=$PATH:/usr/local/go/bin'
-        owner: '{{ vm_username }}'
-        group: '{{ vm_username }}'
+        owner: '{{ ansible_user_id }}'
+        group: '{{ ansible_user_id }}'
         mode: 'u=rw,go=r'
 
     # Clone repositories and link to tools directory
@@ -291,14 +294,14 @@
     - name: Set ZSH for User
       become: yes
       ansible.builtin.user:
-        name: "{{ vm_username }}"
+        name: "{{ ansible_user_id }}"
         shell: "/bin/zsh"
 
     # Enable Kali Logging
     - name: Enable Kali Logging
       shell: |
         sudo mkdir -p /opt/op-log
-        sudo chown -R ${vm_username}:${vm_username} /opt/op-log
+        sudo chown -R ${ansible_user_id}:${ansible_user_id} /opt/op-log
 
         # This base64 blob decodes as follows:
         echo test "$(ps -ocommand= -p $PPID | awk '{print $1}')" == 'script' || (script -f /opt/op-log/$(date +"%Y-%m-%d_%H-%M-%S")_shell.log)
@@ -319,3 +322,5 @@
     - include_tasks: nessus.yml
 
     - include_tasks: docker.yml
+
+    - include_tasks: ./firefox-configuration.yml
