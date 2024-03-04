@@ -8,9 +8,9 @@
   args:
     creates: /usr/local/lib/docker/cli-plugins/docker-compose
 
-- name: Allow {{ vm_username }} user to run Docker
+- name: Allow {{ ansible_user_id }} user to run Docker
   become: yes
   ansible.builtin.user:
-    name: "{{ vm_username }}"
+    name: "{{ ansible_user_id }}"
     append: yes
     groups: docker
