@@ -8,11 +8,21 @@
     share_username: "asmtuser"
 
   tasks:
-    - name: Add /etc/fstab entry for shared folder
+    - name: "Register Share Entry"
+      set_fact:
+        fstab_entry: "# //REPLACE_ME_WITH_SHARE_IP/share\t/share\tcifs\tusername={{ share_username }},port=445,user\t0\t0"
+
+    - name: "Add /etc/fstab entry for shared folder"
       become: yes
-      lineinfile:
-        dest: /etc/fstab
-        line: "//REPLACE_ME_WITH_SHARE_IP/share\t/share\tcifs\tusername={{ share_username }},noauto,user\t0\t0"
+      ansible.builtin.blockinfile:
+        path: /etc/fstab
+        prepend_newline: yes
+        block: |
+          # Uncomment the below line to enable mounting the share
+          # Replace REPLACE_ME_WITH_SHARE_IP with the share IP
+          # After saving this file, run 'sudo systemctl daemon-reload'
+          # Then, run 'mount -a' to mount the share
+          {{ fstab_entry }}
 
     - name: "Create XFCE4 Configuration Directory"
       ansible.builtin.file:
