@@ -291,29 +291,6 @@
     # TODO: Break this out into it's own role
     - include_tasks: burpsuite-pro.yml
 
-    - name: Set ZSH for User
-      become: yes
-      ansible.builtin.user:
-        name: "{{ ansible_user_id }}"
-        shell: "/bin/zsh"
-
-    # Enable Kali Logging
-    - name: Enable Kali Logging
-      shell: |
-        sudo mkdir -p /opt/op-log
-        sudo chown -R ${ansible_user_id}:${ansible_user_id} /opt/op-log
-
-        # This base64 blob decodes as follows:
-        echo test "$(ps -ocommand= -p $PPID | awk '{print $1}')" == 'script' || (script -f /opt/op-log/$(date +"%Y-%m-%d_%H-%M-%S")_shell.log)
-        # export PS1="[\$(date +\"%Y-%m-%d %H:%M:%S\")]"$'\n'"$PS1"
-        # set -o vi
-
-        echo "bWtkaXIgLXAgL29wdC9vcC1sb2cKdGVzdCAiJChwcyAtb2NvbW1hbmQ9IC1wICRQUElEIHwgYXdrICd7cHJpbnQgJDF9JykiID09ICdzY3JpcHQnIHx8IChzY3JpcHQgLWYgL29wdC9vcC1sb2cvJChkYXRlICsiJVktJW0tJWRfJUgtJU0tJVMiKV9zaGVsbC5sb2cpCmV4cG9ydCBQUzE9IltcJChkYXRlICtcIiVZLSVtLSVkICVIOiVNOiVTXCIpXSIkJ1xuJyIkUFMxIgpzZXQgLW8gdmkK" |base64 -d >>  ~/.zshrc
-
-        echo "termcapinfo xterm* ti@:te@" >> ~/.screenrc
-      args:
-        creates: "/opt/op-log/"
-
     # Gowitness Install
     - include_tasks: gowitness.yml
 

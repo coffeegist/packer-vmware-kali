@@ -8,6 +8,17 @@
     share_username: "asmtuser"
 
   tasks:
+    - name: "Create Share and Logging Directories"
+      become: yes
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+        owner: "{{ ansible_user_id }}"
+      with_items:
+        - "/share" # Share
+        - "/opt/op-log" # Logging
+
     - name: "Register Share Entry"
       set_fact:
         fstab_entry: "# //REPLACE_ME_WITH_SHARE_IP/share\t/share\tcifs\tusername={{ share_username }},port=445,user\t0\t0"
@@ -42,3 +53,75 @@
         dest: /home/{{ ansible_user_id }}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml
         mode: 0644
 
+    - name: Set ZSH for User
+      become: yes
+      ansible.builtin.user:
+        name: "{{ ansible_user_id }}"
+        shell: "/bin/zsh"
+
+    - name: Enable Kali Logging
+      ansible.builtin.lineinfile:
+        path: "$HOME/.zshrc"
+        line: '{{ item }}'
+      with_items:
+        - test "$(ps -ocommand= -p $PPID | awk '{print $1}')" == 'script' || (script -qf /opt/op-log/$(date +"%Y-%m-%d_%H-%M-%S")_shell.log)
+        - export PS1="[\$(date +\"%Y-%m-%d %H:%M:%S\")]"$'\n'"$PS1"
+        - set -o vi
+
+    - name: Make Screen Scrollable
+      ansible.builtin.lineinfile:
+        path: "$HOME/.screenrc"
+        line: 'termcapinfo xterm* ti@:te@'
+        create: yes
+
+    # A bug in gnome keyring prevents Burp from launching it's browser
+    # The below is a failed attempt at a workaround to reset the user's keyring data
+    # - name: Reset Gnome Keyring
+    #   shell: |
+    #     rm -rf ~/.local/share/keyrings
+    #     gnome-keyring-daemon --replace --daemonize --components=pkcs11,secrets,ssh
+
+    # - name: 'Enable auto-login'
+    #   become: true
+    #   lineinfile:
+    #     path: /etc/lightdm/lightdm.conf
+    #     line: "autologin-user={{ ansible_user }}"
+    #     insertafter: '^\[Seat\:\*\]$'
+    #     firstmatch: yes
+    #     state: present
+
+    # - name: Restart service lightdm to auto-login
+    #   become: true
+    #   ansible.builtin.service:
+    #     name: lightdm
+    #     state: restarted
+
+    # - name: Sleep to allow auto-login to complete
+    #   ansible.builtin.wait_for:
+    #     timeout: 15
+
+    # - name: Put the certificates into the Chrome certificate store
+    #   become: false
+    #   ignore_errors: yes
+    #   shell: |
+    #     DISPLAY=:0.0 timeout 5 /tools/BurpSuitePro/burpbrowser/*/chrome
+    #     DISPLAY=:0.0 timeout 5 gnome-keyring-daemon --replace --daemonize --components=pkcs11,secrets,ssh
+    #     sleep 20
+
+    # - name: Reboot Kali to auto-login
+    #   become: true
+    #   ansible.builtin.reboot:
+    #     reboot_timeout: 300
+
+    # - name: 'Disable auto-login'
+    #   become: true
+    #   lineinfile:
+    #     path: /etc/lightdm/lightdm.conf
+    #     line: 'autologin-user={{ ansible_user }}'
+    #     state: absent
+
+    # - name: Restart service lightdm to disable auto-login
+    #   become: true
+    #   ansible.builtin.service:
+    #     name: lightdm
+    #     state: restarted
